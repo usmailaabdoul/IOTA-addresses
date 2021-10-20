@@ -6,7 +6,7 @@
 	export let balance;
 
   const removeAddress = () => {
-    dispatcher('removeAddress', address)
+    dispatcher('removeAddress')
   }
 </script>
 

@@ -9,7 +9,10 @@
   import type { IAddressResponse } from "@iota/iota.js";
   import { csvGenerator } from "./utils/generateCVS";
 
-  let addresses: IAddressResponse[];
+  interface AddressesProps extends IAddressResponse {
+    addressBech32?: string;
+  }
+  let addresses: AddressesProps[];
   let showModal: boolean = false;
   let type: "address" | "cvs";
   let title: string;
@@ -26,11 +29,17 @@
     getAddress();
   });
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     console.log(e.detail);
     showModal = false;
     if (type == "address") {
-      manageAddress.addNewAddress(e.detail)
+      try {
+        const newAddress = await manageAddress.addNewAddress(e.detail);
+        console.log(newAddress)
+        addresses = [...addresses, newAddress];
+      } catch (error) {
+        console.log(error)
+      }
     } else if (type == "cvs") {
       let _addresses = addresses.map((address) => ({
         address: address.address,
@@ -49,9 +58,9 @@
     title = "Export Address as CVS";
     showModal = true;
   };
-  const removeAddress = (e) => {
-    console.log(e.detail);
-    addresses = addresses.filter(a => a.address !== e.detail)
+  const removeAddress = (address, add) => {
+    console.log(add);
+    addresses = addresses.filter((a) => a.address !== address);
   };
   const addAddress = () => {
     type = "address";
@@ -68,7 +77,9 @@
         <AddressCard
           address={address.address}
           balance={address.balance}
-          on:removeAddress={removeAddress}
+          on:removeAddress={() => {
+            removeAddress(address.address, address.addressBech32)
+          }}
         />
       {/each}
     </div>

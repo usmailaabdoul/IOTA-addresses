@@ -72,7 +72,8 @@ class ManageAddress {
 
   async addNewAddress(address: string) {
     let addressDetails = await this.client.address(address)
-    console.log(addressDetails)
+    // console.log(addressDetails)
+    return addressDetails;
   }
 }
 
