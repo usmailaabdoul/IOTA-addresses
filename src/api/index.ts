@@ -6,23 +6,24 @@ import {
   Ed25519Seed,
   ED25519_ADDRESS_TYPE,
   generateBip44Address,
-  IOTA_BIP44_BASE_PATH,
   SingleNodeClient,
   INodeInfo,
   getBalance,
-  IAddressResponse,
   IBip44GeneratorState,
 } from "@iota/iota.js";
+import type {AddressesProps} from '../types/index';
 
 class ManageAddress {
   endpoint: string;
   client: SingleNodeClient;
   info: INodeInfo;
+  seed: Ed25519Seed;
 
   constructor(endpoint) {
     this.endpoint = endpoint;
     this.client;
     this.info;
+    this.seed;
   }
 
   async connect() {
@@ -34,8 +35,9 @@ class ManageAddress {
   async generateRandomAddresses() {
     const randomMnemonic = Bip39.randomMnemonic();
     const baseSeed = Ed25519Seed.fromMnemonic(randomMnemonic);
-    const seed = Converter.bytesToHex(baseSeed.toBytes())
-    console.log("\tSeed", seed);
+    this.seed = baseSeed;
+    // const seed = Converter.bytesToHex(baseSeed.toBytes())
+    // console.log("\tSeed", seed);
 
     const addressGeneratorAccountState: IBip44GeneratorState = {
       accountIndex: 0,
@@ -43,9 +45,6 @@ class ManageAddress {
       isInternal: false
     };
 
-    interface AddressesProps extends IAddressResponse {
-      addressBech32?: string;
-    }
     const Addresses: AddressesProps[] = [];
     
     for (let i = 0; i < 2; i++) {
@@ -58,13 +57,13 @@ class ManageAddress {
       const indexPublicKeyAddress = indexEd25519Address.toAddress();
       const address = Bech32Helper.toBech32(ED25519_ADDRESS_TYPE, indexPublicKeyAddress, this.info.bech32HRP)
     
-      console.log("\tAddress ", address)
+      // console.log("\tAddress ", address)
       let addressDetails = await this.client.address(address)
       Addresses.push({...addressDetails, addressBech32: address});
-      console.log(
-        "\tAddress details",
-        addressDetails
-      );
+      // console.log(
+      //   "\tAddress details",
+      //   addressDetails
+      // );
     }
 
     return Addresses;
@@ -72,8 +71,20 @@ class ManageAddress {
 
   async addNewAddress(address: string) {
     let addressDetails = await this.client.address(address)
-    // console.log(addressDetails)
-    return addressDetails;
+
+    const newAddress:AddressesProps = addressDetails;
+    newAddress.addressBech32 = address
+    return newAddress;
+  }
+
+  async updateAddress(addresses) {
+    addresses.forEach(async (address) => {
+      const newBalance = await getBalance(this.client, this.seed, 0);
+      address.balance = newBalance;
+    })
+
+    console.log("Updated address", addresses)
+    return addresses;
   }
 }
 

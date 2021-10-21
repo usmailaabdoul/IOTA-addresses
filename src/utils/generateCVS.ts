@@ -1,4 +1,6 @@
-export const csvGenerator = (totalData, actualHeaderKey, headerToShow, fileName) => {
+import type { CsvGeneratorProps } from '../types/index';
+
+export const csvGenerator = (totalData, headerKey, headerToShow, fileName): CsvGeneratorProps => {
   let data = totalData || null;
   if (data == null || !data.length) {
     return null;
@@ -11,7 +13,7 @@ export const csvGenerator = (totalData, actualHeaderKey, headerToShow, fileName)
   result += lineDelimiter;
   data.forEach(function (item) {
     let ctr = 0;
-    actualHeaderKey.forEach(function (key) {
+    headerKey.forEach(function (key) {
       if (ctr > 0) result += columnDelimiter;
       if (Array.isArray(item[key])) {
         let arrayItem =

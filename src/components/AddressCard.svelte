@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from 'svelte'
   const dispatcher = createEventDispatcher()
 
-	export let address;
-	export let balance;
+	export let address: string;
+	export let balance: number;
 
   const removeAddress = () => {
     dispatcher('removeAddress')

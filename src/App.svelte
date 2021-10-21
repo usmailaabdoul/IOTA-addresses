@@ -1,79 +1,78 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { fly } from "svelte/transition";
+  
   import AddressCard from "./components/AddressCard.svelte";
   import ActionButtons from "./components/ActionButtons.svelte";
   import Modal from "./components/Modal.svelte";
-  import Spinner from "./components/Spinner.svelte";
+  import Loader from "./components/Loader.svelte";
+  import type {AddressesProps} from './types/index';
+  import { addresses } from './store/index';
   import manageAddress from "./api/index";
-  import { onMount } from "svelte";
-  import type { IAddressResponse } from "@iota/iota.js";
-  import { csvGenerator } from "./utils/generateCVS";
+  import {
+    addNewAddress, 
+    exportAddress, 
+    fetchAddress,
+    addressesJob,
+  } from './store/helpers/address';
 
-  interface AddressesProps extends IAddressResponse {
-    addressBech32?: string;
-  }
-  let addresses: AddressesProps[];
+  let addresses_value: AddressesProps[];
   let showModal: boolean = false;
   let type: "address" | "cvs";
   let title: string;
   let loading: boolean = false;
 
+  addresses.subscribe(value => addresses_value = value);
+
   onMount(async () => {
+    await manageAddress.connect();
     async function getAddress() {
       loading = true;
-      await manageAddress.connect();
-      addresses = await manageAddress.generateRandomAddresses();
+      await fetchAddress()
       loading = false;
-      console.log(addresses);
     }
     getAddress();
+    // await addressesJob()
   });
 
   const onSubmit = async (e) => {
-    console.log(e.detail);
     showModal = false;
     if (type == "address") {
       try {
-        const newAddress = await manageAddress.addNewAddress(e.detail);
-        console.log(newAddress)
-        addresses = [...addresses, newAddress];
+        addNewAddress(e.detail);
       } catch (error) {
         console.log(error)
       }
     } else if (type == "cvs") {
-      let _addresses = addresses.map((address) => ({
-        address: address.address,
-        balance: address.balance,
-        addressType: address.addressType,
-      }));
-      let addressKeys = Object.keys(_addresses[0]);
-      let addressHeader = ["Address", "Balance", "Address Type"];
-      console.log("exportring cvs", addressKeys);
-      csvGenerator(_addresses, addressKeys, addressHeader, e.detail);
+      exportAddress(e.detail)
     }
   };
 
-  const exportCVS = () => {
+  const exportCVS = async () => {
     type = "cvs";
     title = "Export Address as CVS";
     showModal = true;
   };
+
   const removeAddress = (address, add) => {
     console.log(add);
-    addresses = addresses.filter((a) => a.address !== address);
+    const newAddress = addresses_value.filter((a) => a.address !== address);
+    addresses.update(() => newAddress)
   };
+
   const addAddress = () => {
     type = "address";
-    title = "Add new address";
+    title = "Add address with bech32 address";
     showModal = true;
   };
+
 </script>
 
 <main>
-  {#if addresses && addresses.length > 0}
+  {#if addresses_value && addresses_value.length > 0}
     <div class="addresses-container">
       <h2 class="addresses-header">Addresses</h2>
-      {#each addresses as address}
+      {#each addresses_value as address}
         <AddressCard
           address={address.address}
           balance={address.balance}
@@ -85,7 +84,7 @@
     </div>
   {:else if loading}
     <div class="no-address-container">
-      <Spinner />
+      <Loader />
     </div>
   {:else}
     <div class="no-address-container">No addresses added yet!</div>
@@ -106,7 +105,7 @@
   <ActionButtons
     on:addAddress={addAddress}
     on:exportCVS={exportCVS}
-    disabledExport={addresses && addresses.length > 0}
+    disabledExport={addresses_value && addresses_value.length > 0}
   />
 </main>
 

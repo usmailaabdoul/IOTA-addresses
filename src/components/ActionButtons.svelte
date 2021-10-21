@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   export let disabledExport: boolean;
-  console.log(disabledExport);
+
   const dispatcher = createEventDispatcher()
 
   const addAddress = () => {
@@ -18,7 +18,7 @@
     <button class="action-btn" on:click={exportCVS} disabled={!disabledExport} >Export as CVS</button>
   </div>
   <div class="action-btn-wrapper2">
-    <button class="action-btn" on:click={addAddress}>Add new address</button>
+    <button class="action-btn" on:click={addAddress}>Add address</button>
   </div>
 </main>
 
