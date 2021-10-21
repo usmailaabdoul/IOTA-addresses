@@ -1,5 +1,5 @@
 import manageAddress from "../../api/index";
-import { addresses } from "../index";
+import { addresses, globalLoader } from "../index";
 import { csvGenerator } from "../../utils/generateCVS";
 import type { ExportedAddressesProps } from "../../types/index";
 
@@ -18,8 +18,10 @@ export const fetchAddress = async () => {
 }
 
 export const addNewAddress = async (data: string) => {
+  globalLoader.update(() => true);
   const newAddress = await manageAddress.addNewAddress(data);
   addresses.update(a => [...a, newAddress])
+  globalLoader.update(() => false);
 }
 
 export const exportAddress = async (fileName: string) => {

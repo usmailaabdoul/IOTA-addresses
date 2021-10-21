@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">IOTA-Addresses</string>
+    <string name="title_activity_main">IOTA-Addresses</string>
+    <string name="package_name">iota.addresses.com</string>
+    <string name="custom_url_scheme">iota.addresses.com</string>
+</resources>

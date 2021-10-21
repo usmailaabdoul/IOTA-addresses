@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
-  const dispatcher = createEventDispatcher()
+  import { createEventDispatcher } from "svelte";
+  const dispatcher = createEventDispatcher();
 
-	export let address: string;
-	export let balance: number;
+  export let address: string;
+  export let balance: number;
 
   const removeAddress = () => {
-    dispatcher('removeAddress')
-  }
+    dispatcher("removeAddress");
+  };
 </script>
 
 <main class="main-container">
@@ -22,57 +22,55 @@
 </main>
 
 <style>
-	@media (max-width: 420px) {
-		.main-container {
-      background-color: #ffffff;
-      margin: 10px 15px;
-      padding: 10px;
-      border-radius: 10px;
-      height: 40px;
+  .main-container {
+    background-color: #ffffff;
+    margin: 10px 15px;
+    padding: 10px;
+    border-radius: 10px;
+    height: 40px;
 
-      display: flex;
-      align-items: center;
+    display: flex;
+    align-items: center;
 
-      box-shadow: 2px 2px 4px 2px #3b8df709;
-    }
+    box-shadow: 2px 2px 4px 2px #3b8df709;
+  }
 
-    .address {
-      flex: 3;
-      display: flex;
-      align-items: center;
-      display: inline-block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+  .address {
+    flex: 3;
+    display: flex;
+    align-items: center;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-    .address-text {
-      color: #3b8df7;
-      font-size: 14px;
-    }
-    .balance {
-      flex: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  .address-text {
+    color: #3b8df7;
+    font-size: 14px;
+  }
+  .balance {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-    .balance-heading {
-      margin: 0;
-      font-size: 14px;
-    }
-    .balance-text {
-      font-size: 18px;
-      font-weight: 700;
-      color: #3b8df7;
-    }
+  .balance-heading {
+    margin: 0;
+    font-size: 14px;
+  }
+  .balance-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3b8df7;
+  }
 
-    .remove-balance {
-      display: flex;
-      flex: 1;
-      align-items: center;
-      justify-content: flex-end;
-      margin: 0;
-    }
-	}
+  .remove-balance {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 0;
+  }
 </style>

@@ -5,9 +5,10 @@
   import AddressCard from "./components/AddressCard.svelte";
   import ActionButtons from "./components/ActionButtons.svelte";
   import Modal from "./components/Modal.svelte";
+  import GlobalSpinner from "./components/GlobalLoader.svelte"
   import Loader from "./components/Loader.svelte";
   import type {AddressesProps} from './types/index';
-  import { addresses } from './store/index';
+  import { addresses, globalLoader } from './store/index';
   import manageAddress from "./api/index";
   import {
     addNewAddress, 
@@ -17,12 +18,14 @@
   } from './store/helpers/address';
 
   let addresses_value: AddressesProps[];
+  let globalLoader_value: boolean;
   let showModal: boolean = false;
   let type: "address" | "cvs";
   let title: string;
   let loading: boolean = false;
 
   addresses.subscribe(value => addresses_value = value);
+  globalLoader.subscribe(value => globalLoader_value = value);
 
   onMount(async () => {
     await manageAddress.connect();
@@ -89,6 +92,7 @@
   {:else}
     <div class="no-address-container">No addresses added yet!</div>
   {/if}
+
   {#if showModal}
     <div
       class="add-address-wrapper"
@@ -102,11 +106,16 @@
       />
     </div>
   {/if}
+
   <ActionButtons
     on:addAddress={addAddress}
     on:exportCVS={exportCVS}
     disabledExport={addresses_value && addresses_value.length > 0}
   />
+
+  {#if globalLoader_value}
+    <GlobalSpinner />
+  {/if}
 </main>
 
 <style>
@@ -138,6 +147,7 @@
 
   .addresses-header {
     margin-left: 20px;
+    margin-top: 50px;
   }
 
   .no-address-container {
