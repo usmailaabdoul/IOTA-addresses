@@ -1,6 +1,10 @@
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Device } from '@capacitor/device';
+import { LocalNotifications } from '@capacitor/local-notifications';
+
 import type { CsvGeneratorProps } from '../types/index';
 
-export const csvGenerator = (totalData, headerKey, headerToShow, fileName): CsvGeneratorProps => {
+export const csvGenerator = async (totalData, headerKey, headerToShow, fileName): Promise<CsvGeneratorProps> => {
   let data = totalData || null;
   if (data == null || !data.length) {
     return null;
@@ -36,24 +40,34 @@ export const csvGenerator = (totalData, headerKey, headerToShow, fileName): CsvG
 
   if (result == null) return;
 
-  var blob = new Blob([result]);
-  if (navigator.userAgent.match(/iPhone|iPad|iPod/i)) {
-    var hiddenElement = window.document.createElement("a");
-    hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(result);
+  const csvData = `data:text/csv;charset=utf-8,${encodeURI(result)}`;
+  const info = await Device.getInfo();
+
+  if (info.platform === 'web') {
+    let hiddenElement = window.document.createElement("a");
+    hiddenElement.href = csvData;
     hiddenElement.target = "_blank";
     hiddenElement.download = fileName;
     hiddenElement.click();
   } else {
-    let link = document.createElement("a");
-    if (link.download !== undefined) {
-      // Browsers that support HTML5 download attribute
-      var url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", fileName);
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    await Filesystem.appendFile({
+      path: `Download/${fileName}.csv`,
+      data: csvData,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    })
+    LocalNotifications.schedule({
+      notifications: [
+        {
+          title: "IOTA Addresses",
+          body: "IOTA addrresses have been downloaded",
+          id: 1,
+          sound: null,
+          attachments: null,
+          actionTypeId: "",
+          extra: null
+        }
+      ]
+    });
   }
 };

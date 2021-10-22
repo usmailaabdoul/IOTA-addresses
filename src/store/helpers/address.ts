@@ -1,6 +1,6 @@
 import manageAddress from "../../api/index";
 import { addresses, globalLoader } from "../index";
-import { csvGenerator } from "../../utils/generateCVS";
+import { csvGenerator } from "../../utils/generateCSV";
 import type { ExportedAddressesProps } from "../../types/index";
 
 export const addressesJob = async () => {
@@ -20,7 +20,7 @@ export const fetchAddress = async () => {
 export const addNewAddress = async (data: string) => {
   globalLoader.update(() => true);
   const newAddress = await manageAddress.addNewAddress(data);
-  addresses.update(a => [...a, newAddress])
+  addresses.update(a => [newAddress, ...a])
   globalLoader.update(() => false);
 }
 

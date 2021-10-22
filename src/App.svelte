@@ -28,14 +28,14 @@
   globalLoader.subscribe(value => globalLoader_value = value);
 
   onMount(async () => {
-    await manageAddress.connect();
     async function getAddress() {
-      loading = true;
+      globalLoader_value = true;
+      await manageAddress.connect();
       await fetchAddress()
-      loading = false;
+      globalLoader_value = false;
     }
     getAddress();
-    // await addressesJob()
+    await addressesJob()
   });
 
   const onSubmit = async (e) => {
@@ -85,12 +85,10 @@
         />
       {/each}
     </div>
-  {:else if loading}
+  {:else if !globalLoader_value}
     <div class="no-address-container">
-      <Loader />
+      <div class="no-address-container">No addresses added yet!</div>
     </div>
-  {:else}
-    <div class="no-address-container">No addresses added yet!</div>
   {/if}
 
   {#if showModal}

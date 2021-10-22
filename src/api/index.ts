@@ -47,7 +47,7 @@ class ManageAddress {
 
     const Addresses: AddressesProps[] = [];
     
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 5; i++) {
       const path = generateBip44Address(addressGeneratorAccountState, i === 0);
 
       const addressSeed = baseSeed.generateSeedFromPath(new Bip32Path(path));
