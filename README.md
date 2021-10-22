@@ -29,3 +29,8 @@ npm run build
 npx cap sync
 npx cap run ios / npx cap run android
 ```
+## Output
+
+After running the build successfully and and running the application on a device you should see the below UI
+
+![testProject](https://user-images.githubusercontent.com/50529081/138406288-16aad679-48b1-4376-a53f-1473f6424bb6.jpeg)
